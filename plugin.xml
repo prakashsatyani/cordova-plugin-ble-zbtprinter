@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugin xmlns="http://www.phonegap.com/ns/plugins/1.0"
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        id="it.zenitlab.cordova.plugins.zbtprinter"
+        version="1.0">
+
+    <name>ZebraBluetoothPrinter</name>
+    <description>A Cordova/Phonegap driver for Zebra bluetooth printers</description>
+    <license>Apache</license>
+    <engines>
+        <engine name="cordova" version=">=3.0.0"/>
+    </engines>
+
+    <js-module src="www/zbtprinter.js" name="ZebraBluetoothPrinter">
+        <clobbers target="cordova.plugins.zbtprinter"/>
+    </js-module>
+
+    <!-- android -->
+    <platform name="android">
+
+        <framework src="com.fasterxml.jackson.core:jackson-annotations:2.2.3" />
+        <framework src="com.fasterxml.jackson.core:jackson-core:2.2.3" />
+        <framework src="com.fasterxml.jackson.core:jackson-databind:2.2.3" />
+
+        <config-file target="AndroidManifest.xml" parent="/*">
+            <uses-permission android:name="android.permission.BLUETOOTH"/>
+            <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
+            <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+        </config-file>
+
+        <source-file src="src/android/it/zenitlab/cordova/plugins/zbtprinter/ZebraBluetoothPrinter.java"
+                     target-dir="src/android/it/zenitlab/cordova/plugins/zbtprinter"/>
+
+        <config-file target="res/xml/config.xml" parent="/*">
+            <feature name="ZebraBluetoothPrinter">
+                <param name="android-package" value="it.zenitlab.cordova.plugins.zbtprinter.ZebraBluetoothPrinter"/>
+            </feature>
+        </config-file>
+
+        <source-file src="src/android/lib/ZSDK_ANDROID_API.jar" target-dir="libs"/>
+
+    </platform>
+</plugin>
