@@ -6,6 +6,7 @@ and discovering Zebra printer devices via Bluetooth.
 ## Usage
 You can print images on the zebra printer in base64 format:
 
+```js
 cordova.plugins.zbtprinter.printImage(base64StringArray, MACAddress,
     function(success) { 
         alert("Print ok"); 
@@ -13,9 +14,11 @@ cordova.plugins.zbtprinter.printImage(base64StringArray, MACAddress,
         alert(fail); 
     }
 );
+```
 
 And discover nearby Blueooth Zebra printers:
 
+```js
 cordova.plugins.zbtprinter.discoverPrinters(
     function(MACAddress) { 
         alert("discovered a new printer: " + MACAddress); 
@@ -23,7 +26,7 @@ cordova.plugins.zbtprinter.discoverPrinters(
         alert(fail); 
     }
 )
-
+```
 
 ## Install
 ###Cordova
