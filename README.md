@@ -1,10 +1,10 @@
 # cordova-plugin-zbtprinter
 This plugin defines a global 'cordova.plugins.zbtprinter' object, which provides an API for printing base64 images on a Zebra printer 
-and discovering Zebra printer devices via Bluetooth.
+and discovering Zebra printers with Bluetooth.
 
 
 ## Usage
-You can print images on the zebra printer in base64 format:
+Images can be printed on a Zebra printer in base64 format:
 
 ```js
 cordova.plugins.zbtprinter.printImage(base64StringArray, MACAddress,
@@ -16,7 +16,7 @@ cordova.plugins.zbtprinter.printImage(base64StringArray, MACAddress,
 );
 ```
 
-And discover nearby Blueooth Zebra printers:
+Discover nearby bluetooth Zebra printers:
 
 ```js
 cordova.plugins.zbtprinter.discoverPrinters(
@@ -28,12 +28,10 @@ cordova.plugins.zbtprinter.discoverPrinters(
 )
 ```
 
-## Install
-###Cordova
-
+## Installation
 cordova plugin add https://github.com/aximobile/cordova-plugin-zbtprinter
 
-##ZPL - Zebra Programming Language
+## ZPL - Zebra Programming Language
 For more information about ZPL please see the  [PDF Official Manual](https://support.zebra.com/cpws/docs/zpl/zpl_manual.pdf)
 
 This plugin is based on mmilidoni's zebra printer plugin and can be found here: https://github.com/mmilidoni/zbtprinter.git
