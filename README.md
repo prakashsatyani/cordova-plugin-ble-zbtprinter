@@ -28,6 +28,18 @@ cordova.plugins.zbtprinter.discoverPrinters(
 )
 ```
 
+Retrieve the currently connected printer name:
+
+```js
+cordova.plugins.zbtprinter.getPrinterName(MACAddress,
+    function(printerName) { 
+        alert("Printer name: " + printerName); 
+    }, function(fail) { 
+        alert(fail); 
+    }
+);
+```
+
 ## Installation
 cordova plugin add https://github.com/aximobile/cordova-plugin-zbtprinter
 
