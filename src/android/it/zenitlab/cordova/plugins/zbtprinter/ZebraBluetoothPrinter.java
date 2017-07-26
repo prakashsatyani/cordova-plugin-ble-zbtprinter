@@ -1,36 +1,33 @@
 package it.zenitlab.cordova.plugins.zbtprinter;
 
-import java.io.IOException;
-
-import org.apache.cordova.CallbackContext;
-import org.apache.cordova.CordovaPlugin;
-
-import org.json.JSONArray;
-import org.json.JSONException;
+import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothDevice;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.os.Looper;
+import android.util.Base64;
+import android.util.Log;
 
 import com.zebra.sdk.comm.BluetoothConnection;
 import com.zebra.sdk.comm.Connection;
 import com.zebra.sdk.comm.ConnectionException;
-
 import com.zebra.sdk.device.ZebraIllegalArgumentException;
+import com.zebra.sdk.graphics.internal.ZebraImageAndroid;
 import com.zebra.sdk.printer.PrinterStatus;
 import com.zebra.sdk.printer.ZebraPrinter;
 import com.zebra.sdk.printer.ZebraPrinterFactory;
 import com.zebra.sdk.printer.ZebraPrinterLinkOs;
-
-import com.zebra.sdk.graphics.internal.ZebraImageAndroid;
 import com.zebra.sdk.printer.discovery.BluetoothDiscoverer;
 import com.zebra.sdk.printer.discovery.DiscoveredPrinter;
 import com.zebra.sdk.printer.discovery.DiscoveryHandler;
 
-import android.os.Looper;
-import android.util.Log;
-import android.util.Base64;
+import org.apache.cordova.CallbackContext;
+import org.apache.cordova.CordovaPlugin;
+import org.json.JSONArray;
+import org.json.JSONException;
 
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-
-import android.bluetooth.BluetoothAdapter;
+import java.io.IOException;
+import java.util.Set;
 
 public class ZebraBluetoothPrinter extends CordovaPlugin implements DiscoveryHandler {
 
@@ -58,6 +55,10 @@ public class ZebraBluetoothPrinter extends CordovaPlugin implements DiscoveryHan
             return true;
         } else if (action.equals("discoverPrinters")) {
             discoverPrinters();
+            return true;
+        } else if (action.equals("getPrinterName")) {
+            String MACAddress = args.getString(0);
+            getPrinterName(MACAddress);
             return true;
         }
 
@@ -147,6 +148,7 @@ public class ZebraBluetoothPrinter extends CordovaPlugin implements DiscoveryHan
 
     /**
      * Gebruik de Zebra Android SDK om de lengte te bepalen indien de printer LINK-OS ondersteunt
+     *
      * @param printer
      * @param zebraimage
      * @throws Exception
@@ -203,6 +205,37 @@ public class ZebraBluetoothPrinter extends CordovaPlugin implements DiscoveryHan
                 }
             }
         }).start();
+    }
+
+    private void getPrinterName(final String macAddress) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                String printerName = searchPrinterNameForMacAddress(macAddress);
+
+                if (printerName != null) {
+                    callbackContext.success(printerName);
+                } else {
+                    callbackContext.error("Geen printer gevonden.");
+                }
+            }
+        }).start();
+    }
+
+    private String searchPrinterNameForMacAddress(String macAddress) {
+        BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+        Set<BluetoothDevice> pairedDevices = bluetoothAdapter.getBondedDevices();
+
+        if (pairedDevices.size() > 0) {
+            // There are paired devices. Get the name and address of each paired device.
+            for (BluetoothDevice device : pairedDevices) {
+                if (device.getAddress().equalsIgnoreCase(macAddress)) {
+                    return device.getName();
+                }
+            }
+        }
+
+        return null;
     }
 
     @Override
