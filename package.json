@@ -1,23 +1,32 @@
 {
   "name": "cordova-plugin-zbtprinter",
   "version": "1.0.0",
-  "description": "this plugin defines a global 'cordova.plugins.zbtprinter' object, which provides an API for printing base64 images on a Zebra printer and discovering Zebra printers with Bluetooth",
-  "main": "./www/zbtprinter.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+  "description": "A Cordova/Phonegap driver for Zebra bluetooth printers",
+  "cordova": {
+    "id": "it.zenitlab.cordova.plugins.zbtprinter",
+    "platforms": [
+      "android"
+    ]
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/aximobile/cordova-plugin-zbtprinter.git"
   },
   "keywords": [
-    "Zebra",
-    "cordova",
+    "ecosystem:cordova",
     "cordova-android",
-    "Bluetooth"
+	"zebra-printer",
+	"Bluetooth",
+	"Zebra"
+  ],
+  "engines": [
+    {
+      "name": "cordova",
+      "version": ">=3.0.0"
+    }
   ],
   "author": "Wouter Van Huffel",
-  "license": "Apache-2.0",
+  "license": "Apache",
   "bugs": {
     "url": "https://github.com/aximobile/cordova-plugin-zbtprinter/issues"
   },
