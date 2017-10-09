@@ -35,6 +35,7 @@ public class ZebraBluetoothPrinter extends CordovaPlugin implements DiscoveryHan
     private CallbackContext callbackContext;
     private boolean printerFound;
     private int SEARCH_NEW_PRINTERS = -1;
+    private final int MAX_RETRY_ATTEMPTS = 5;
 
     public ZebraBluetoothPrinter() {
 
@@ -66,21 +67,26 @@ public class ZebraBluetoothPrinter extends CordovaPlugin implements DiscoveryHan
     }
 
     private void sendImage(final JSONArray base64Array, final String MACAddress) throws IOException {
+
         new Thread(new Runnable() {
             @Override
             public void run() {
+
                 try {
 
                     BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
                     if (bluetoothAdapter.isEnabled()) {
 
                         Connection thePrinterConn = new BluetoothConnection(MACAddress);
+                        thePrinterConn.open();
 
-                        if (isPrinterReady(thePrinterConn)) {
+                        ZebraPrinter printer = ZebraPrinterFactory.getInstance(thePrinterConn);
 
-                            thePrinterConn.open();
+                        boolean isPrinterReady = getPrinterStatus(printer, 0);
 
-                            ZebraPrinter printer = ZebraPrinterFactory.getInstance(thePrinterConn);
+                        if (isPrinterReady) {
+
+                            ZebraPrinterLinkOs zebraPrinterLinkOs = ZebraPrinterFactory.createLinkOsPrinter(printer);
 
                             for (int i = base64Array.length() - 1; i >= 0; i--) {
                                 byte[] decodedString = Base64.decode(base64Array.get(i).toString(), Base64.DEFAULT);
@@ -88,15 +94,23 @@ public class ZebraBluetoothPrinter extends CordovaPlugin implements DiscoveryHan
                                 ZebraImageAndroid zebraimage = new ZebraImageAndroid(decodedByte);
 
                                 //Lengte van het label eerst instellen om te kleine of te grote afdruk te voorkomen
-                                if (i == base64Array.length() - 1) {
+                                if (zebraPrinterLinkOs != null && i == base64Array.length() - 1) {
                                     setLabelLength(printer, zebraimage);
                                 }
 
-                                printImage(zebraimage, printer, thePrinterConn);
+                                if (zebraPrinterLinkOs != null) {
+                                    printer.printImage(zebraimage, 150, 0, zebraimage.getWidth(), zebraimage.getHeight(), false);
+                                } else {
+                                    printer.storeImage("wgkimage.pcx", zebraimage, -1, -1);
+                                    printImageTheOldWay(zebraimage, printer, thePrinterConn, 0);
+                                }
+
                             }
 
                             //Zie dat de data zeker tot de printer geraakt voordat de connectie sluit
                             Thread.sleep(500);
+
+                            Log.d(LOG_TAG, "Closing the connection...");
 
                             thePrinterConn.close();
 
@@ -123,25 +137,60 @@ public class ZebraBluetoothPrinter extends CordovaPlugin implements DiscoveryHan
         }).start();
     }
 
-    private void printImage(ZebraImageAndroid zebraimage, ZebraPrinter printer, Connection thePrinterConn) throws ConnectionException, ZebraIllegalArgumentException {
-        ZebraPrinterLinkOs zebraPrinterLinkOs = ZebraPrinterFactory.createLinkOsPrinter(printer);
+    private void printImageTheOldWay(ZebraImageAndroid zebraimage, ZebraPrinter printer, Connection thePrinterConn, int retryAttempts) throws Exception {
 
-        //Gebruik de Zebra Android sdk om te printen indien de printer LINK-OS ondersteunt
-        if (zebraPrinterLinkOs != null) {
-            printer.printImage(zebraimage, 150, 0, zebraimage.getWidth(), zebraimage.getHeight(), false);
+        boolean printerReady = getPrinterStatus(printer, 0);
 
-            //Gebruik de oude manier om de data te printen indien LINK-OS niet ondersteund wordt
-        } else {
-            printer.storeImage("wgkimage.pcx", zebraimage, -1, -1);
+        if (printerReady) {
+            Log.d(LOG_TAG, "Printing image...");
 
             String cpcl = "! 0 200 200 ";
             cpcl += zebraimage.getHeight();
             cpcl += " 1\r\n";
-            cpcl += "PW 750\r\nTONE 0\r\nSPEED 6\r\nSETFF 203 5\r\nON - FEED FEED\r\nNO - PACE\r\nJOURNAL\r\n";
+            cpcl += "PW 750\r\nTONE 0\r\nSPEED 6\r\nSETFF 203 5\r\nON - FEED FEED\r\nAUTO - PACE\r\nJOURNAL\r\n";
             cpcl += "PCX 150 0 !<wgkimage.pcx\r\n";
             cpcl += "FORM\r\n";
             cpcl += "PRINT\r\n";
             thePrinterConn.write(cpcl.getBytes());
+
+        }
+
+    }
+
+    private boolean getPrinterStatus(ZebraPrinter printer, int retryAttempts) throws Exception {
+        PrinterStatus printerStatus = null;
+        try {
+            printerStatus = printer.getCurrentStatus();
+
+            if (printerStatus.isReadyToPrint) {
+                return true;
+            } else {
+                if (retryAttempts < MAX_RETRY_ATTEMPTS) {
+                    if (printerStatus.isPaused) {
+                        throw new Exception("Printer is gepauzeerd. Gelieve deze eerst te activeren.");
+                    } else if (printerStatus.isHeadOpen) {
+                        throw new Exception("Printer staat open. Gelieve deze eerst te sluiten.");
+                    } else if (printerStatus.isPaperOut) {
+                        throw new Exception("Gelieve eerst de etiketten aan te vullen.");
+                    } else {
+                        return getPrinterStatus(printer, ++retryAttempts);
+                    }
+                } else {
+                    throw new Exception("Onbekende printerfout opgetreden.");
+                }
+
+            }
+
+        } catch (ConnectionException e) {
+            Log.d(LOG_TAG, "ConnectionException: " + e.getMessage());
+
+            if (retryAttempts < MAX_RETRY_ATTEMPTS) {
+                Log.d(LOG_TAG, "printer not ready, gonna retry...");
+                Thread.sleep(5000);
+                return getPrinterStatus(printer, ++retryAttempts);
+            } else {
+                throw new Exception("Onbekende printerfout opgetreden.");
+            }
         }
 
     }
@@ -162,26 +211,6 @@ public class ZebraBluetoothPrinter extends CordovaPlugin implements DiscoveryHan
                 zebraPrinterLinkOs.setSetting("zpl.label_length", zebraimage.getHeight() + "");
             }
         }
-    }
-
-    private Boolean isPrinterReady(Connection connection) throws Exception {
-        Boolean isOK = false;
-        connection.open();
-        // Creates a ZebraPrinter object to use Zebra specific functionality like getCurrentStatus()
-        ZebraPrinter printer = ZebraPrinterFactory.getInstance(connection);
-        PrinterStatus printerStatus = printer.getCurrentStatus();
-        if (printerStatus.isReadyToPrint) {
-            isOK = true;
-        } else if (printerStatus.isPaused) {
-            throw new Exception("Printer is gepauzeerd. Gelieve deze eerst te activeren.");
-        } else if (printerStatus.isHeadOpen) {
-            throw new Exception("Printer staat open. Gelieve deze eerst te sluiten.");
-        } else if (printerStatus.isPaperOut) {
-            throw new Exception("Gelieve eerst de etiketten aan te vullen.");
-        } else {
-            throw new Exception("Onbekende printerfout opgetreden.");
-        }
-        return isOK;
     }
 
     private void discoverPrinters() {
