@@ -11,9 +11,9 @@ import android.util.Log;
 import com.zebra.sdk.comm.BluetoothConnection;
 import com.zebra.sdk.comm.Connection;
 import com.zebra.sdk.comm.ConnectionException;
-import com.zebra.sdk.device.ZebraIllegalArgumentException;
 import com.zebra.sdk.graphics.internal.ZebraImageAndroid;
 import com.zebra.sdk.printer.PrinterStatus;
+import com.zebra.sdk.printer.SGD;
 import com.zebra.sdk.printer.ZebraPrinter;
 import com.zebra.sdk.printer.ZebraPrinterFactory;
 import com.zebra.sdk.printer.ZebraPrinterLinkOs;
@@ -82,6 +82,12 @@ public class ZebraBluetoothPrinter extends CordovaPlugin implements DiscoveryHan
 
                         ZebraPrinter printer = ZebraPrinterFactory.getInstance(thePrinterConn);
 
+                        String printerLanguage = SGD.GET("device.languages", thePrinterConn);
+
+                        if (!printerLanguage.contains("zpl")) {
+                            SGD.SET("device.languages", "hybrid_xml_zpl", thePrinterConn);
+                        }
+
                         boolean isPrinterReady = getPrinterStatus(printer, 0);
 
                         if (isPrinterReady) {
@@ -89,7 +95,8 @@ public class ZebraBluetoothPrinter extends CordovaPlugin implements DiscoveryHan
                             ZebraPrinterLinkOs zebraPrinterLinkOs = ZebraPrinterFactory.createLinkOsPrinter(printer);
 
                             for (int i = base64Array.length() - 1; i >= 0; i--) {
-                                byte[] decodedString = Base64.decode(base64Array.get(i).toString(), Base64.DEFAULT);
+                                String base64Image = base64Array.get(i).toString();
+                                byte[] decodedString = Base64.decode(base64Image, Base64.DEFAULT);
                                 Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
                                 ZebraImageAndroid zebraimage = new ZebraImageAndroid(decodedByte);
 
@@ -98,13 +105,14 @@ public class ZebraBluetoothPrinter extends CordovaPlugin implements DiscoveryHan
                                     setLabelLength(printer, zebraimage);
                                 }
 
+                                //setLabelLength(printer, zebraimage);
+
                                 if (zebraPrinterLinkOs != null) {
                                     printer.printImage(zebraimage, 150, 0, zebraimage.getWidth(), zebraimage.getHeight(), false);
                                 } else {
                                     printer.storeImage("wgkimage.pcx", zebraimage, -1, -1);
                                     printImageTheOldWay(zebraimage, printer, thePrinterConn, 0);
                                 }
-
                             }
 
                             //Zie dat de data zeker tot de printer geraakt voordat de connectie sluit
@@ -186,7 +194,7 @@ public class ZebraBluetoothPrinter extends CordovaPlugin implements DiscoveryHan
 
             if (retryAttempts < MAX_RETRY_ATTEMPTS) {
                 Log.d(LOG_TAG, "printer not ready, gonna retry...");
-                Thread.sleep(5000);
+                Thread.sleep(3000);
                 return getPrinterStatus(printer, ++retryAttempts);
             } else {
                 throw new Exception("Onbekende printerfout opgetreden.");
