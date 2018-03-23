@@ -24,9 +24,9 @@
 * Automatically change printing-mode to ZPL before printing.
 
 ### 1.3.0 (March 23, 2018)
-* Fix for older printers where printerstatus could not properly be received.
+* Fix for older printers where printerstatus could not be received properly.
 * Improved exception handling.
-* Fix on older printers where Bluetooth connection was lost sometimes.
+* Fix on older printers where bluetooth connection was lost sometimes.
 * Added more logging for debugging purposes.
 
 
