@@ -74,12 +74,12 @@ public class ZebraBluetoothPrinter extends CordovaPlugin implements DiscoveryHan
         new Thread(new Runnable() {
             @Override
             public void run() {
-                printLabels(labels, MACAddress, 0);
+                printLabels(labels, MACAddress);
             }
         }).start();
     }
 
-    private void printLabels(JSONArray labels, String MACAddress, int retryAttempt) {
+    private void printLabels(JSONArray labels, String MACAddress) {
         try {
 
             boolean isConnected = openBluetoothConnection(MACAddress);
@@ -87,7 +87,7 @@ public class ZebraBluetoothPrinter extends CordovaPlugin implements DiscoveryHan
             if (isConnected) {
                 initializePrinter();
 
-                boolean isPrinterReady = getPrinterStatus();
+                boolean isPrinterReady = getPrinterStatus(0);
 
                 if (isPrinterReady) {
 
@@ -95,6 +95,8 @@ public class ZebraBluetoothPrinter extends CordovaPlugin implements DiscoveryHan
 
                     //Voldoende wachten zodat label afgeprint is voordat we een nieuwe printer-operatie starten.
                     Thread.sleep(15000);
+
+                    thePrinterConn.close();
 
                     callbackContext.success();
                 } else {
@@ -106,17 +108,10 @@ public class ZebraBluetoothPrinter extends CordovaPlugin implements DiscoveryHan
 
         } catch (ConnectionException e) {
             Log.e(LOG_TAG, "Connection exception: " + e.getMessage());
-            resetConnection();
 
-            //De connectie tussen de printer & het toestel is verloren gegaan. Reset de connectie en probeer automatisch
-            // eenmalig opnieuw te printen
+            //De connectie tussen de printer & het toestel is verloren gegaan.
             if (e.getMessage().toLowerCase().contains("broken pipe")) {
-                if (retryAttempt < MAX_PRINT_RETRIES) {
-                    Log.d(LOG_TAG, "Retrying print operation...");
-                    printLabels(labels, MACAddress, ++retryAttempt);
-                } else {
-                    callbackContext.error("De connectie tussen het toestel en de printer is verloren gegaan. Probeer opnieuw alstublieft.");
-                }
+                callbackContext.error("De connectie tussen het toestel en de printer is verloren gegaan. Probeer opnieuw alstublieft.");
 
                 //Geen printer gevonden via bluetooth, -1 teruggeven zodat er gezocht wordt naar nieuwe printers.
             } else if (e.getMessage().toLowerCase().contains("socket might closed")) {
@@ -136,14 +131,12 @@ public class ZebraBluetoothPrinter extends CordovaPlugin implements DiscoveryHan
     }
 
     private void initializePrinter() throws ConnectionException, ZebraPrinterLanguageUnknownException {
-        if (printer == null) {
-            Log.d(LOG_TAG, "Initializing printer...");
-            printer = ZebraPrinterFactory.getInstance(thePrinterConn);
-            String printerLanguage = SGD.GET("device.languages", thePrinterConn);
-            if (!printerLanguage.contains("zpl")) {
-                SGD.SET("device.languages", "hybrid_xml_zpl", thePrinterConn);
-                Log.d(LOG_TAG, "printer language set...");
-            }
+        Log.d(LOG_TAG, "Initializing printer...");
+        printer = ZebraPrinterFactory.getInstance(thePrinterConn);
+        String printerLanguage = SGD.GET("device.languages", thePrinterConn);
+        if (!printerLanguage.contains("zpl")) {
+            SGD.SET("device.languages", "hybrid_xml_zpl", thePrinterConn);
+            Log.d(LOG_TAG, "printer language set...");
         }
     }
 
@@ -151,11 +144,9 @@ public class ZebraBluetoothPrinter extends CordovaPlugin implements DiscoveryHan
         BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
 
         if (bluetoothAdapter.isEnabled()) {
+            Log.d(LOG_TAG, "Creating a bluetooth-connection for mac-address " + MACAddress);
 
-            if (thePrinterConn == null || !thePrinterConn.isConnected()) {
-                Log.d(LOG_TAG, "No connection found. Trying to create a new bluetooth-connection for mac-address " + MACAddress);
-                thePrinterConn = new BluetoothConnection(MACAddress);
-            }
+            thePrinterConn = new BluetoothConnection(MACAddress);
 
             Log.d(LOG_TAG, "Opening connection...");
             thePrinterConn.open();
@@ -210,39 +201,35 @@ public class ZebraBluetoothPrinter extends CordovaPlugin implements DiscoveryHan
 
     }
 
-    private boolean getPrinterStatus() throws Exception {
+    private boolean getPrinterStatus(int retryAttempt) throws Exception {
         try {
-            if (printerStatus == null) {
-                Log.d(LOG_TAG, "No previous printerstatus has been retrieved, Retrieving printer status...");
-                printerStatus = printer.getCurrentStatus();
-                return getPrinterStatus();
+            printerStatus = printer.getCurrentStatus();
+
+            if (printerStatus.isReadyToPrint) {
+                Log.d(LOG_TAG, "Printer is ready to print...");
+                return true;
             } else {
-                if (printerStatus.isReadyToPrint) {
-                    Log.d(LOG_TAG, "Printer is ready to print...");
-                    return true;
+                if (printerStatus.isPaused) {
+                    throw new Exception("Printer is gepauzeerd. Gelieve deze eerst te activeren.");
+                } else if (printerStatus.isHeadOpen) {
+                    throw new Exception("Printer staat open. Gelieve deze eerst te sluiten.");
+                } else if (printerStatus.isPaperOut) {
+                    throw new Exception("Gelieve eerst de etiketten aan te vullen.");
                 } else {
-                    if (printerStatus.isPaused) {
-                        throw new Exception("Printer is gepauzeerd. Gelieve deze eerst te activeren.");
-                    } else if (printerStatus.isHeadOpen) {
-                        throw new Exception("Printer staat open. Gelieve deze eerst te sluiten.");
-                    } else if (printerStatus.isPaperOut) {
-                        throw new Exception("Gelieve eerst de etiketten aan te vullen.");
-                    } else {
-                        throw new Exception("Kon de printerstatus niet ophalen. Gelieve opnieuw te proberen.");
-                    }
+                    throw new Exception("Kon de printerstatus niet ophalen. Gelieve opnieuw te proberen. " +
+                        "Herstart de printer indien dit probleem zich blijft voordoen");
                 }
             }
         } catch (ConnectionException e) {
-            throw new Exception("Kon de printerstatus niet ophalen. Gelieve opnieuw te proberen.");
+            if (retryAttempt < MAX_PRINT_RETRIES) {
+                Thread.sleep(5000);
+                return getPrinterStatus(++retryAttempt);
+            } else {
+                throw new Exception("Kon de printerstatus niet ophalen. Gelieve opnieuw te proberen. " +
+                    "Herstart de printer indien dit probleem zich blijft voordoen.");
+            }
         }
 
-    }
-
-    private void resetConnection() {
-        Log.d(LOG_TAG, "Clearing connection...");
-        thePrinterConn = null;
-        printerStatus = null;
-        printer = null;
     }
 
     /**
@@ -264,6 +251,7 @@ public class ZebraBluetoothPrinter extends CordovaPlugin implements DiscoveryHan
 
     private void discoverPrinters() {
         printerFound = false;
+
         new Thread(new Runnable() {
             public void run() {
                 Looper.prepare();
@@ -332,11 +320,12 @@ public class ZebraBluetoothPrinter extends CordovaPlugin implements DiscoveryHan
         }
     }
 
+
     @Override
     public void discoveryFinished() {
         Log.d(LOG_TAG, "Finished searching for printers...");
         if (!printerFound) {
-            callbackContext.error("Geen printer gevonden.");
+            callbackContext.error("Geen printer gevonden. Herstart de printer indien dit probleem zich blijft voordoen.");
         }
     }
 
