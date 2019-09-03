@@ -16,7 +16,7 @@ cordova.plugins.zbtprinter.printImage(base64StringArray, MACAddress,
 );
 ```
 
-Labels can be printed on a Zebra printer in base64 format:
+You can send data in ZPL Zebra Programing Language:
 
 ```js
 cordova.plugins.zbtprinter.print(MACAddress, "^XA^FO20,20^A0N,25,25^FDThis is a ZPL test.^FS^XZ",
