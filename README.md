@@ -16,6 +16,18 @@ cordova.plugins.zbtprinter.printImage(base64StringArray, MACAddress,
 );
 ```
 
+Labels can be printed on a Zebra printer in base64 format:
+
+```js
+cordova.plugins.zbtprinter.print(MACAddress, "^XA^FO20,20^A0N,25,25^FDThis is a ZPL test.^FS^XZ",
+    function(success) { 
+        alert("Print ok"); 
+    }, function(fail) { 
+        alert(fail); 
+    }
+);
+```
+
 Discover nearby bluetooth Zebra printers:
 
 ```js
@@ -26,6 +38,17 @@ cordova.plugins.zbtprinter.discoverPrinters(
         alert(fail); 
     }
 )
+```
+
+You can get a status response from a connected Zebra printer using:
+```js
+cordova.plugins.zbtprinter.getStatus(address,
+    function(success){
+        alert("Zbtprinter status: " + success);
+    }, function(fail) {
+        alert("Zbtprinter error: " + fail);
+    }
+);
 ```
 
 Retrieve the currently connected printer name:
@@ -41,7 +64,7 @@ cordova.plugins.zbtprinter.getPrinterName(MACAddress,
 ```
 
 ## Installation
-cordova plugin add https://github.com/aximobile/cordova-plugin-zbtprinter
+cordova plugin add https://github.com/prakashsatyani/cordova-plugin-zbtprinter
 
 ## ZPL - Zebra Programming Language
 For more information about ZPL please see the  [PDF Official Manual](https://support.zebra.com/cpws/docs/zpl/zpl_manual.pdf)
