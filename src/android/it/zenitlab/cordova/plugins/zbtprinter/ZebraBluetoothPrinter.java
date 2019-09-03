@@ -72,13 +72,13 @@ public class ZebraBluetoothPrinter extends CordovaPlugin implements DiscoveryHan
             discoverPrinters();
             return true;
         } else if (action.equals("getPrinterName")) {
-            String MACAddress = args.getString(0);
-            getPrinterName(MACAddress);
+            String mac = args.getString(0);
+            getPrinterName(mac);
             return true;
         } else if (action.equals("getStatus")) {
             try {
-                String MACAddress = args.getString(0);
-                getPrinterStatus(callbackContext, MACAddress);
+                String mac = args.getString(0);
+                getPrinterStatus(callbackContext, mac);
             } catch (Exception e) {
                 Log.e(LOG_TAG, e.getMessage());
                 e.printStackTrace();
