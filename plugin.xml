@@ -18,9 +18,9 @@
     <!-- android -->
     <platform name="android">
 
-        <framework src="com.fasterxml.jackson.core:jackson-annotations:2.2.3" />
+        <!--<framework src="com.fasterxml.jackson.core:jackson-annotations:2.2.3" />
         <framework src="com.fasterxml.jackson.core:jackson-core:2.2.3" />
-        <framework src="com.fasterxml.jackson.core:jackson-databind:2.2.3" />
+        <framework src="com.fasterxml.jackson.core:jackson-databind:2.2.3" />-->
 
         <config-file target="AndroidManifest.xml" parent="/*">
             <uses-permission android:name="android.permission.BLUETOOTH"/>
