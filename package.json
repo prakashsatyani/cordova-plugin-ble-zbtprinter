@@ -10,7 +10,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/aximobile/cordova-plugin-bluetooth-zbtprinter.git"
+    "url": "git+https://github.com/prakashsatyani/cordova-plugin-bluetooth-zbtprinter.git"
   },
   "keywords": [
     "ecosystem:cordova",
@@ -25,10 +25,10 @@
       "version": ">=3.0.0"
     }
   ],
-  "author": "Wouter Van Huffel",
+  "author": "Prakash Satyani",
   "license": "Apache",
   "bugs": {
-    "url": "https://github.com/aximobile/cordova-plugin-bluetooth-zbtprinter/issues"
+    "url": "https://github.com/prakashsatyani/cordova-plugin-bluetooth-zbtprinter/issues"
   },
-  "homepage": "https://github.com/aximobile/cordova-plugin-bluetooth-zbtprinter#readme"
+  "homepage": "https://github.com/prakashsatyani/cordova-plugin-bluetooth-zbtprinter#readme"
 }
