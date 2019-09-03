@@ -5,7 +5,7 @@ exports.discoverPrinters = function(successCallback, errorCallback) {
 };
 
 exports.print = function(MACAddress, str, successCallback, errorCallback) {
-    cordova.exec(successCallback, errorCallback, 'ZebraBluetoothPrinter', 'print', [mac, str]);
+    cordova.exec(successCallback, errorCallback, 'ZebraBluetoothPrinter', 'print', [MACAddress, str]);
 };
 
 exports.printImage = function(base64, MACAddress, successCallback, errorCallback) {
@@ -17,5 +17,5 @@ exports.getPrinterName = function(MACAddress, successCallback, errorCallback) {
 };
 
 exports.getStatus = function(MACAddress, successCallback, errorCallback) {
-    cordova.exec(successCallback, errorCallback, 'ZebraBluetoothPrinter', 'getStatus', [mac])
+    cordova.exec(successCallback, errorCallback, 'ZebraBluetoothPrinter', 'getStatus', [MACAddress])
 };
