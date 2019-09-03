@@ -58,6 +58,16 @@ public class ZebraBluetoothPrinter extends CordovaPlugin implements DiscoveryHan
                 e.printStackTrace();
             }
             return true;
+        } else if (action.equals("print")) {
+            try {
+                String MACAddress = args.getString(0);
+                String msg = args.getString(1);
+                sendData(callbackContext, MACAddress, msg);
+            } catch (Exception e) {
+                Log.e(LOG_TAG, e.getMessage());
+                e.printStackTrace();
+            }
+            return true;
         } else if (action.equals("discoverPrinters")) {
             discoverPrinters();
             return true;
@@ -65,11 +75,108 @@ public class ZebraBluetoothPrinter extends CordovaPlugin implements DiscoveryHan
             String MACAddress = args.getString(0);
             getPrinterName(MACAddress);
             return true;
+        } else if (action.equals("getStatus")) {
+            try {
+                String MACAddress = args.getString(0);
+                getPrinterStatus(callbackContext, MACAddress);
+            } catch (Exception e) {
+                Log.e(LOG_TAG, e.getMessage());
+                e.printStackTrace();
+            }
+            return true;
         }
 
         return false;
     }
 
+    void getPrinterStatus(final CallbackContext callbackContext, final String mac) throws IOException {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+
+                    Connection thePrinterConn = new BluetoothConnectionInsecure(mac);
+
+                    Looper.prepare();
+
+                    thePrinterConn.open();
+
+                    ZebraPrinter zPrinter = ZebraPrinterFactory.getInstance(thePrinterConn);
+                    PrinterStatus printerStatus = zPrinter.getCurrentStatus();
+
+                    if (printerStatus.isReadyToPrint){
+                        callbackContext.success("Printer is ready for use");
+                    }
+
+                    else if(printerStatus.isPaused){
+                        callbackContext.error("Printer is currently paused");
+                    }
+
+                    else if(printerStatus.isPaperOut){
+                        callbackContext.error("Printer is out of paper");
+                    }
+
+                    else if(printerStatus.isHeadOpen){
+                        callbackContext.error("Printer head is open");
+                    }
+                    
+                    else{
+                        callbackContext.error("Cannot print, unknown error");
+                    }
+
+                    thePrinterConn.close();
+
+                    Looper.myLooper().quit();
+                } catch (Exception e){
+                    callbackContext.error(e.getMessage());
+                }
+            }
+        }).start();
+
+    }
+    
+    
+    /*
+     * This will send data to be printed by the bluetooth printer
+     */
+    void sendData(final CallbackContext callbackContext, final String mac, final String msg) throws IOException {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+
+                    // Instantiate insecure connection for given Bluetooth MAC Address.
+                    Connection thePrinterConn = new BluetoothConnectionInsecure(mac);
+
+                    // if (isPrinterReady(thePrinterConn)) {
+
+                    // Initialize
+                    Looper.prepare();
+
+                    // Open the connection - physical connection is established here.
+                    thePrinterConn.open();
+
+                    SGD.SET("device.languages", "zpl", thePrinterConn);
+                    thePrinterConn.write(msg.getBytes());
+
+                    // Close the insecure connection to release resources.
+                    thePrinterConn.close();
+
+                    Looper.myLooper().quit();
+                    callbackContext.success("Done");
+
+                    // } else {
+                        // callbackContext.error("Printer is not ready");
+                    // }
+                } catch (Exception e) {
+                    // Handle communications error here.
+                    callbackContext.error(e.getMessage());
+                }
+            }
+        }).start();
+    }
+
+    
     private void sendImage(final JSONArray labels, final String MACAddress) throws IOException {
         new Thread(new Runnable() {
             @Override
