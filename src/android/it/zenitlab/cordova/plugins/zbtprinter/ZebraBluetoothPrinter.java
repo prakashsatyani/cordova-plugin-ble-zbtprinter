@@ -95,7 +95,7 @@ public class ZebraBluetoothPrinter extends CordovaPlugin implements DiscoveryHan
             public void run() {
                 try {
 
-                    Connection thePrinterConn = new BluetoothConnectionInsecure(mac);
+                    Connection thePrinterConn = new BluetoothConnection(mac);
 
                     Looper.prepare();
 
@@ -146,7 +146,7 @@ public class ZebraBluetoothPrinter extends CordovaPlugin implements DiscoveryHan
                 try {
 
                     // Instantiate insecure connection for given Bluetooth MAC Address.
-                    Connection thePrinterConn = new BluetoothConnectionInsecure(mac);
+                    Connection thePrinterConn = new BluetoothConnection(mac);
 
                     // if (isPrinterReady(thePrinterConn)) {
 
