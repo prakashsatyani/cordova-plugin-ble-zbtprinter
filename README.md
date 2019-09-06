@@ -64,7 +64,7 @@ cordova.plugins.zbtprinter.getPrinterName(MACAddress,
 ```
 
 ## Installation
-cordova plugin add https://github.com/prakashsatyani/cordova-plugin-zbtprinter
+cordova plugin add https://github.com/prakashsatyani/cordova-plugin-ble-zbtprinter
 
 ## ZPL - Zebra Programming Language
 For more information about ZPL please see the  [PDF Official Manual](https://support.zebra.com/cpws/docs/zpl/zpl_manual.pdf)
