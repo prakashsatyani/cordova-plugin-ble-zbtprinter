@@ -1,16 +1,16 @@
 {
-  "name": "cordova-plugin-bluetooth-zbtprinter",
+  "name": "cordova-plugin-ble-zbtprinter",
   "version": "1.4.0",
   "description": "A Cordova/Phonegap driver for Zebra bluetooth printers",
   "cordova": {
-    "id": "cordova-plugin-bluetooth-zbtprinter",
+    "id": "cordova-plugin-ble-zbtprinter",
     "platforms": [
       "android"
     ]
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/prakashsatyani/cordova-plugin-bluetooth-zbtprinter.git"
+    "url": "git+https://github.com/prakashsatyani/cordova-plugin-ble-zbtprinter.git"
   },
   "keywords": [
     "ecosystem:cordova",
@@ -28,7 +28,7 @@
   "author": "Prakash Satyani",
   "license": "Apache",
   "bugs": {
-    "url": "https://github.com/prakashsatyani/cordova-plugin-bluetooth-zbtprinter/issues"
+    "url": "https://github.com/prakashsatyani/cordova-plugin-ble-zbtprinter/issues"
   },
-  "homepage": "https://github.com/prakashsatyani/cordova-plugin-bluetooth-zbtprinter#readme"
+  "homepage": "https://github.com/prakashsatyani/cordova-plugin-ble-zbtprinter#readme"
 }
