@@ -8,7 +8,7 @@ import android.os.Looper;
 import android.util.Base64;
 import android.util.Log;
 
-import com.zebra.sdk.comm.BluetoothConnection;
+import com.zebra.sdk.comm.BluetoothConnectionInsecure;
 import com.zebra.sdk.comm.Connection;
 import com.zebra.sdk.comm.ConnectionException;
 import com.zebra.sdk.graphics.internal.ZebraImageAndroid;
@@ -95,7 +95,7 @@ public class ZebraBluetoothPrinter extends CordovaPlugin implements DiscoveryHan
             public void run() {
                 try {
 
-                    Connection thePrinterConn = new BluetoothConnection(mac);
+                    Connection thePrinterConn = new BluetoothConnectionInsecure(mac);
 
                     Looper.prepare();
 
@@ -146,7 +146,7 @@ public class ZebraBluetoothPrinter extends CordovaPlugin implements DiscoveryHan
                 try {
 
                     // Instantiate insecure connection for given Bluetooth MAC Address.
-                    Connection thePrinterConn = new BluetoothConnection(mac);
+                    Connection thePrinterConn = new BluetoothConnectionInsecure(mac);
 
                     // if (isPrinterReady(thePrinterConn)) {
 
