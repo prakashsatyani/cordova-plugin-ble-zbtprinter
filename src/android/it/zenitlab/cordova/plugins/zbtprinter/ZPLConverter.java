@@ -1,4 +1,4 @@
-package android.it.zenitlab.cordova.plugins.zbtprinter;
+package it.zenitlab.cordova.plugins.zbtprinter;
 
 import android.graphics.Bitmap;
 import java.util.HashMap;
