@@ -19,3 +19,7 @@ exports.getPrinterName = function(MACAddress, successCallback, errorCallback) {
 exports.getStatus = function(MACAddress, successCallback, errorCallback) {
     cordova.exec(successCallback, errorCallback, 'ZebraBluetoothPrinter', 'getStatus', [MACAddress])
 };
+
+exports.getZPLfromImage = function(base64String, addHeaderFooter, successCallback, errorCallback) {
+    cordova.exec(successCallback, errorCallback, 'ZebraBluetoothPrinter', 'getZPLfromImage', [base64String, addHeaderFooter])
+};
