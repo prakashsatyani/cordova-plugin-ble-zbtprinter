@@ -12,7 +12,7 @@ import android.os.Looper;
 import android.util.Base64;
 import android.util.Log;
 
-import android.it.zenitlab.cordova.plugins.zbtprinter.ZPLConverter;
+import it.zenitlab.cordova.plugins.zbtprinter.ZPLConverter;
 import com.zebra.sdk.comm.BluetoothConnectionInsecure;
 import com.zebra.sdk.comm.Connection;
 import com.zebra.sdk.comm.ConnectionException;
