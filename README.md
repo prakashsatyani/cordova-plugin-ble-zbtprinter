@@ -71,7 +71,7 @@ Get ZPL equivalent code from the base64 Image string :
 
 ```js
 
-var base64Image = base64String;
+var base64Image     = base64String;
 var addHeaderFooter = false;    //Want to add header/footer ZPL code or not
 
 cordova.plugins.zbtprinter.getZPLfromImage(base64Image, addHeaderFooter,
