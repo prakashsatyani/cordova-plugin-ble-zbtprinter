@@ -18,9 +18,9 @@
     <!-- android -->
     <platform name="android">
 
-        <framework src="com.fasterxml.jackson.core:jackson-annotations:2.2.4" custom="false" />
-        <framework src="com.fasterxml.jackson.core:jackson-core:2.2.4" custom="false" />
-        <framework src="com.fasterxml.jackson.core:jackson-databind:2.2.4" custom="false" />
+        <framework src="com.fasterxml.jackson.core:jackson-annotations:2.2.4" custom="true" type="gradleReference" />
+        <framework src="com.fasterxml.jackson.core:jackson-core:2.2.4" custom="true" type="gradleReference" />
+        <framework src="com.fasterxml.jackson.core:jackson-databind:2.2.4" custom="true" type="gradleReference" />
 
         <config-file target="AndroidManifest.xml" parent="/*">
             <uses-permission android:name="android.permission.BLUETOOTH"/>
