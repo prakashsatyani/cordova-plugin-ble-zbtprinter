@@ -253,7 +253,7 @@ public class ZebraBluetoothPrinter extends CordovaPlugin implements DiscoveryHan
         if (bluetoothAdapter.isEnabled()) {
             Log.d(LOG_TAG, "Creating a bluetooth-connection for mac-address " + MACAddress);
 
-            thePrinterConn = new BluetoothConnection(MACAddress);
+            thePrinterConn = new BluetoothConnectionInsecure(MACAddress);
 
             Log.d(LOG_TAG, "Opening connection...");
             thePrinterConn.open();
