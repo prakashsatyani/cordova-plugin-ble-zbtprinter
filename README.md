@@ -75,10 +75,10 @@ var base64Image = base64String;
 var addHeaderFooter = false;    //Want to add header/footer ZPL code or not
 
 cordova.plugins.zbtprinter.getZPLfromImage(base64Image, addHeaderFooter,
-		    function(success) {
-		    	alert(success);
-		    }, function(fail) {
-		    	alert(fail);
+		    function(zplCode) {
+		    	alert("ZPL Code : " + zplCode);
+		    }, function(error) {
+		    	alert(error);
 		    }
 		);
 ```
