@@ -7,6 +7,8 @@ and discovering Zebra printers with Bluetooth.
 Images can be printed on a Zebra printer in base64 format:
 
 ```js
+var base64StringArray = [base64String1, base64String2];
+
 cordova.plugins.zbtprinter.printImage(base64StringArray, MACAddress,
     function(success) { 
         alert("Print ok"); 
