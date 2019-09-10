@@ -4,10 +4,15 @@ import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.ColorMatrix;
+import android.graphics.ColorMatrixColorFilter;
+import android.graphics.Paint;
 import android.os.Looper;
 import android.util.Base64;
 import android.util.Log;
 
+import android.it.zenitlab.cordova.plugins.zbtprinter.ZPLConverter;
 import com.zebra.sdk.comm.BluetoothConnectionInsecure;
 import com.zebra.sdk.comm.Connection;
 import com.zebra.sdk.comm.ConnectionException;
@@ -29,6 +34,7 @@ import org.json.JSONException;
 
 import java.io.IOException;
 import java.util.Set;
+
 
 public class ZebraBluetoothPrinter extends CordovaPlugin implements DiscoveryHandler {
 
@@ -84,9 +90,40 @@ public class ZebraBluetoothPrinter extends CordovaPlugin implements DiscoveryHan
                 e.printStackTrace();
             }
             return true;
+        } else if(action.equals("getZPLfromImage")){
+            try {
+                String base64String = args.getString(0);
+                boolean addHeaderFooter = args.getBoolean(1);
+                getZPLfromImage(callbackContext, base64String, addHeaderFooter);
+            } catch (Exception e) {
+                Log.e(LOG_TAG, e.getMessage());
+                e.printStackTrace();
+            }
         }
 
         return false;
+    }
+
+    void getZPLfromImage(final CallbackContext callbackContext, final String base64Image, final boolean addHeaderFooter) throws Exception {
+
+        String zplCode = "";
+
+        byte[] decodedString = Base64.decode(base64Image, Base64.DEFAULT);
+        Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
+
+        ZPLConverter zplConveter = new ZPLConverter();
+        zplConveter.setCompressHex(true);
+        zplConveter.setBlacknessLimitPercentage(70);
+
+        Bitmap grayBitmap = toGrayScale(decodedByte);
+
+        try {
+            zplCode = zplConveter.convertFromImage(grayBitmap, addHeaderFooter);
+            callbackContext.success(zplCode);
+        } catch (Exception e){
+            callbackContext.error(e.getMessage());
+        }
+
     }
 
     void getPrinterStatus(final CallbackContext callbackContext, final String mac) throws IOException {
@@ -266,6 +303,22 @@ public class ZebraBluetoothPrinter extends CordovaPlugin implements DiscoveryHan
         }
 
         return false;
+    }
+
+    public static Bitmap toGrayScale(Bitmap bmpOriginal) {
+        int width, height;
+        height = bmpOriginal.getHeight();
+        width = bmpOriginal.getWidth();
+
+        Bitmap grayScale = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+        Canvas c = new Canvas(grayScale);
+        Paint paint = new Paint();
+        ColorMatrix cm = new ColorMatrix();
+        cm.setSaturation(0);
+        ColorMatrixColorFilter f = new ColorMatrixColorFilter(cm);
+        paint.setColorFilter(f);
+        c.drawBitmap(bmpOriginal, 0, 0, paint);
+        return grayScale;
     }
 
     private void printLabel(JSONArray labels) throws Exception {
