@@ -30,6 +30,8 @@
 
         <source-file src="src/android/it/zenitlab/cordova/plugins/zbtprinter/ZebraBluetoothPrinter.java"
                      target-dir="src/android/it/zenitlab/cordova/plugins/zbtprinter"/>
+        <source-file src="src/android/it/zenitlab/cordova/plugins/zbtprinter/ZPLConverter.java"
+                     target-dir="src/android/it/zenitlab/cordova/plugins/zbtprinter"/>
 
         <config-file target="res/xml/config.xml" parent="/*">
             <feature name="ZebraBluetoothPrinter">
