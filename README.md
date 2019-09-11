@@ -89,4 +89,3 @@ cordova plugin add https://github.com/prakashsatyani/cordova-plugin-ble-zbtprint
 ## ZPL - Zebra Programming Language
 For more information about ZPL please see the  [PDF Official Manual](https://support.zebra.com/cpws/docs/zpl/zpl_manual.pdf)
 
-This plugin is based on mmilidoni's zebra printer plugin and can be found here: https://github.com/mmilidoni/zbtprinter.git
