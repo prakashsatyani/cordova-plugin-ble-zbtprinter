@@ -76,11 +76,11 @@ var addHeaderFooter 	= false;    	//Want to add header/footer ZPL code or not
 var blacknessPercentage = 50;		//Blackness Percentage
 
 cordova.plugins.zbtprinter.getZPLfromImage(base64Image, addHeaderFooter, blacknessPercentage,
-	function(zplCode) {
-		alert("ZPL Code : " + zplCode);
-	}, function(error) {
-		alert(error);
-	}
+    function(zplCode) {
+        alert("ZPL Code : " + zplCode);
+    }, function(error) {
+	alert(error);
+    }
 );
 ```
 
