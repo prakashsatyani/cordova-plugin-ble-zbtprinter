@@ -41,7 +41,7 @@ cordova.plugins.zbtprinter.discoverPrinters(
     }, function(fail) { 
         alert(fail); 
     }
-)
+);
 ```
 
 You can get a status response from a connected Zebra printer using:
@@ -76,12 +76,12 @@ var addHeaderFooter 	= false;    	//Want to add header/footer ZPL code or not
 var blacknessPercentage = 50;		//Blackness Percentage
 
 cordova.plugins.zbtprinter.getZPLfromImage(base64Image, addHeaderFooter, blacknessPercentage,
-		    function(zplCode) {
-		    	alert("ZPL Code : " + zplCode);
-		    }, function(error) {
-		    	alert(error);
-		    }
-		);
+	function(zplCode) {
+		alert("ZPL Code : " + zplCode);
+	}, function(error) {
+		alert(error);
+	}
+);
 ```
 
 ## Installation
