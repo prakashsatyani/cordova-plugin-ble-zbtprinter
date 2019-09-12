@@ -113,7 +113,7 @@ public class ZebraBluetoothPrinter extends CordovaPlugin implements DiscoveryHan
 
         ZPLConverter zplConveter = new ZPLConverter();
         zplConveter.setCompressHex(true);
-        zplConveter.setBlacknessLimitPercentage(70);
+        zplConveter.setBlacknessLimitPercentage(50);
 
         Bitmap grayBitmap = toGrayScale(decodedByte);
 
