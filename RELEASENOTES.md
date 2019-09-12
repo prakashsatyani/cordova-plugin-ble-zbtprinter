@@ -29,4 +29,6 @@
 * Fix on older printers where bluetooth connection was lost sometimes.
 * Added more logging for debugging purposes.
 
-
+### 1.4.0 (Sept 9, 2019)
+* Added function to print ZPL labels
+* Added a function where user can get ZPL equivalent code from the base64 string
