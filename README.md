@@ -1,5 +1,5 @@
 # cordova-plugin-ble-zbtprinter
-This plugin defines a global 'cordova.plugins.zbtprinter' object, which provides an API for printing base64 images and labels on a Zebra printer, converting base64 string to equivalent ZPL code, get printer status and discovering Zebra printers with Bluetooth.
+This plugin defines a global 'cordova.plugins.zbtprinter' object, which provides an API for printing base64 images and labels on a Zebra printer, converting base64 string to equivalent ZPL code, getting printer status and discovering Zebra printers with Bluetooth.
 
 
 ## Usage
