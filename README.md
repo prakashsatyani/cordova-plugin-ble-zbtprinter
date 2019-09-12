@@ -73,7 +73,7 @@ Get ZPL equivalent code from the base64 Image string :
 
 var base64Image     	= base64String;
 var addHeaderFooter 	= false;    	//Want to add header/footer ZPL code or not
-var blacknessPercentage = 50;		//Balckness Percentage
+var blacknessPercentage = 50;		//Blackness Percentage
 
 cordova.plugins.zbtprinter.getZPLfromImage(base64Image, addHeaderFooter, blacknessPercentage,
 		    function(zplCode) {
