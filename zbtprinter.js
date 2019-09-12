@@ -1,11 +1,10 @@
-	var exec = require("cordova/exec");
+var exec = require("cordova/exec");
 
- 	function ZebraBluetoothPrinter() {
-    }
+function ZebraBluetoothPrinter() {}
 
-    ZebraBluetoothPrinter.prototype.esegui = function (successCallback, errorCallback) {
-        exec(successCallback, errorCallback, 'ZebraBluetoothPrinter', 'print', ["ciccio"]);
-    };
-    var bluetoothPrinter = new ZebraBluetoothPrinter();
-    module.exports = bluetoothPrinter;
+ZebraBluetoothPrinter.prototype.esegui = function (successCallback, errorCallback) {
+    exec(successCallback, errorCallback, 'ZebraBluetoothPrinter', 'print', ["ciccio"]);
+};
 
+var bluetoothPrinter = new ZebraBluetoothPrinter();
+module.exports = bluetoothPrinter;
