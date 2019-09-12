@@ -94,7 +94,8 @@ public class ZebraBluetoothPrinter extends CordovaPlugin implements DiscoveryHan
             try {
                 String base64String = args.getString(0);
                 boolean addHeaderFooter = args.getBoolean(1);
-                getZPLfromImage(callbackContext, base64String, addHeaderFooter);
+                int blacknessPercentage = args.getInt(2);
+                getZPLfromImage(callbackContext, base64String, blacknessPercentage, addHeaderFooter);
             } catch (Exception e) {
                 Log.e(LOG_TAG, e.getMessage());
                 e.printStackTrace();
@@ -104,7 +105,7 @@ public class ZebraBluetoothPrinter extends CordovaPlugin implements DiscoveryHan
         return false;
     }
 
-    void getZPLfromImage(final CallbackContext callbackContext, final String base64Image, final boolean addHeaderFooter) throws Exception {
+    void getZPLfromImage(final CallbackContext callbackContext, final String base64Image, final int blacknessPercentage, final boolean addHeaderFooter) throws Exception {
 
         String zplCode = "";
 
@@ -113,7 +114,7 @@ public class ZebraBluetoothPrinter extends CordovaPlugin implements DiscoveryHan
 
         ZPLConverter zplConveter = new ZPLConverter();
         zplConveter.setCompressHex(true);
-        zplConveter.setBlacknessLimitPercentage(50);
+        zplConveter.setBlacknessLimitPercentage(blacknessPercentage);
 
         Bitmap grayBitmap = toGrayScale(decodedByte);
 
