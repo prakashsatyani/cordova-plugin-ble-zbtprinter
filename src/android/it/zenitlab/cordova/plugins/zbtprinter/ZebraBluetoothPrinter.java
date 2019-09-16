@@ -238,7 +238,7 @@ public class ZebraBluetoothPrinter extends CordovaPlugin implements DiscoveryHan
 
                     printLabel(labels);
 
-                    //Voldoende wachten zodat label afgeprint is voordat we een nieuwe printer-operatie starten.
+                    //Sufficient waiting for the label to print before we start a new printer operation.
                     Thread.sleep(15000);
 
                     thePrinterConn.close();
@@ -254,11 +254,11 @@ public class ZebraBluetoothPrinter extends CordovaPlugin implements DiscoveryHan
         } catch (ConnectionException e) {
             Log.e(LOG_TAG, "Connection exception: " + e.getMessage());
 
-            //De connectie tussen de printer & het toestel is verloren gegaan.
+            //The connection between the printer & the device has been lost.
             if (e.getMessage().toLowerCase().contains("broken pipe")) {
                 callbackContext.error("The connection between the device and the printer has been lost. Please try again.");
 
-                //Geen printer gevonden via bluetooth, -1 teruggeven zodat er gezocht wordt naar nieuwe printers.
+            //No printer found via Bluetooth, -1 return so that new printers are searched for.
             } else if (e.getMessage().toLowerCase().contains("socket might closed")) {
                 int SEARCH_NEW_PRINTERS = -1;
                 callbackContext.error(SEARCH_NEW_PRINTERS);
@@ -394,7 +394,7 @@ public class ZebraBluetoothPrinter extends CordovaPlugin implements DiscoveryHan
     }
 
     /**
-     * Gebruik de Zebra Android SDK om de lengte te bepalen indien de printer LINK-OS ondersteunt
+     * Use the Zebra Android SDK to determine the length if the printer supports LINK-OS
      *
      * @param zebraimage
      * @throws Exception
