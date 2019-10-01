@@ -118,6 +118,9 @@ public class ZebraBluetoothPrinter extends CordovaPlugin implements DiscoveryHan
         byte[] ditheredB64Png = Base64.decode(base64Dithered, Base64.DEFAULT);
         Bitmap ditheredPng = BitmapFactory.decodeByteArray(ditheredB64Png, 0, ditheredB64Png.length);
         
+        if(ditheredPng.getHeight() > ditheredPng.getWidth())
+            ditheredPng = Bitmap.createScaledBitmap(ditheredPng, 300, 540, true);
+        
         ZPLConverter zplConveter = new ZPLConverter();
         zplConveter.setCompressHex(false);
         zplConveter.setBlacknessLimitPercentage(blacknessPercentage);
