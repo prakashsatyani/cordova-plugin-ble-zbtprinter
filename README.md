@@ -68,7 +68,7 @@ cordova.plugins.zbtprinter.getPrinterName(MACAddress,
 );
 ```
 
-##ZPLfromBase64
+# ZPLfromBase64
 Get ZPL equivalent code from the base64 Image string :
 
 ```js
